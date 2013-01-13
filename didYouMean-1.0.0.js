@@ -167,7 +167,7 @@ var didYouMean = (function() {
     }
 
     // If we have a winner, return it.
-    return winner || argument.callee.nullResultValue;
+    return winner || arguments.callee.nullResultValue;
   };
 
   // Set default options.
