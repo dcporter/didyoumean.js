@@ -1,5 +1,4 @@
-  didYouMean
-  ==========
+  # didYouMean
 
   [Available on GitHub](https://github.com/dcporter/didyoumean.js).
 
@@ -9,8 +8,7 @@
   http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance#JavaScript
 
 
-  didYouMean(str, list, [key])
-  ----------------------------
+  ## didYouMean(str, list, [key])
 
   - str: The string input to match.
   - list: An array of strings or objects to match against.
@@ -20,8 +18,7 @@
   Returns: the closest matching string, or null if no strings exceed the threshold.
 
 
-  Option(s)
-  ---------
+  ## Option(s)
 
   Options are set on the didYouMean function object. You may change them at any time.
 
@@ -64,8 +61,7 @@
     This option has no effect on lists of strings.
 
 
-  Examples
-  --------
+  ## Examples
 
   Matching against a list of strings:
   ```
@@ -97,16 +93,14 @@
   ```
 
 
-  TODO
-  ----
+  ## TODO
 
   This is missing a major optimization that I don't understand how to implement. Since we only ever care about
   edit distances that are smaller than the current winner, we can stop searching as soon we exceed that limit for
   any given possible match.
 
 
-  License
-  -------
+  ## License
 
   didYouMean copyright (c) 2013 Dave Porter.
 
