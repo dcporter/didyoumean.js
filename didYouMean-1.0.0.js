@@ -5,8 +5,13 @@ didYouMean.js - A simple JavaScript matching engine
 
 [Available on GitHub](https://github.com/dcporter/didyoumean.js).
 
-A super-simple, not-terribly-optimized JS library for matching short, typo-ridden input to a list of possibilities.
-It computes edit distance using a Levenshtein distance algorithm from wikibooks:
+A super-simple, not-terribly-optimized JS library for matching short, typo-ridden input to a list of
+possibilities. You can use it to suggest a misspelled command-line utility option to a user, or to
+offer links to nearby valid URLs on your 404 page. (The examples below are taken from my personal
+site, [dcporter.net](http://dcporter.net/)), which uses didYouMean.js to suggest correct URLs from
+misspelled ones, such as [dcporter.net/me/instargm](http://dcporter.net/me/instargm).)
+
+didYouMean.js computes edit distance using a Levenshtein distance algorithm from wikibooks:
 
 http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance#JavaScript
 
@@ -22,8 +27,8 @@ didYouMean(str, list, [key])
 Returns: the closest matching string, or null if no strings exceed the threshold.
 
 
-Option(s)
----------
+Options
+-------
 
 Options are set on the didYouMean function object. You may change them at any time.
 
