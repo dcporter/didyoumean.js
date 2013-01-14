@@ -105,9 +105,10 @@ console.log(didYouMean(input, list, key));
 TODO
 ----
 
-This is missing a major optimization that I don't understand how to implement. Since we only ever care about
-edit distances that are smaller than the current winner, we can stop searching as soon we exceed that limit for
-any given possible match.
+This is missing a major optimization. Since we only ever care about edit distances that are smaller than the
+current winner, we can stop searching as soon we exceed that limit for any given possible match.
+
+The optimized method, in C, can be found [here](http://www.lemoda.net/c/edit-distance-with-max/index.html).
 
 
 License
