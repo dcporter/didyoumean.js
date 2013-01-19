@@ -129,10 +129,10 @@ document may be found [here](http://github.com/dcporter/didyoumean.js).
 rather than less, permissive.)
 
 */
-var didYouMean = (function() {
+(function() {
 
   // The didYouMean method.
-  var ret = function(str, list, key) {
+  var didYouMean = function(str, list, key) {
     if (!str) return false;
 
     // If we're running a case-insensitive search, smallify str.
@@ -172,15 +172,22 @@ var didYouMean = (function() {
   };
 
   // Set default options.
-  ret.threshold = 0.4;
-  ret.caseSensitive = false;
-  ret.nullResultValue = null;
-  ret.returnWinningObject = null;
+  didYouMean.threshold = 0.4;
+  didYouMean.caseSensitive = false;
+  didYouMean.nullResultValue = null;
+  didYouMean.returnWinningObject = null;
 
-  // Release the hounds. From the enclosure.
-  return ret;
-  // The enCLOSURE. Get it?
+  // Expose.
+  // In node...
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = didYouMean;
+  }
+  // Otherwise...
+  else {
+    window.didYouMean = didYouMean;
+  }
 
+  
   // Algorithm courtesy of http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance#JavaScript
   // TODO: Optimize this to quit searching after the current winning value is exceeded.
   function getEditDistance(a, b){
