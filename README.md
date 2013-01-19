@@ -1,17 +1,14 @@
+
 didYouMean.js - A simple JavaScript matching engine
 ===================================================
 
 [Available on GitHub](https://github.com/dcporter/didyoumean.js).
 
-A super-simple, not-terribly-optimized JS library for matching short, typo-ridden input to a list of
-possibilities. You can use it to suggest a misspelled command-line utility option to a user, or to
-offer links to nearby valid URLs on your 404 page. (The examples below are taken from my personal
-site, [dcporter.net](http://dcporter.net/)), which uses didYouMean.js to suggest correct URLs from
+A super-simple, highly optimized JS library for matching human-quality input to a list of potential
+matches. You can use it to suggest a misspelled command-line utility option to a user, or to offer
+links to nearby valid URLs on your 404 page. (The examples below are taken from my personal site,
+[dcporter.net](http://dcporter.net/)), which uses didYouMean.js to suggest correct URLs from
 misspelled ones, such as [dcporter.net/me/instargm](http://dcporter.net/me/instargm).)
-
-didYouMean.js computes edit distance using a Levenshtein distance algorithm from wikibooks:
-
-http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance#JavaScript
 
 
 didYouMean(str, list, [key])
@@ -102,26 +99,18 @@ console.log(didYouMean(input, list, key));
 ```
 
 
-TODO
-----
-
-This is missing a major optimization. Since we only ever care about edit distances that are smaller than the
-current winner, we can stop searching as soon we exceed that limit for any given possible match.
-
-The optimized method, in C, can be found [here](http://www.lemoda.net/c/edit-distance-with-max/index.html).
-
-
 License
 -------
 
 didYouMean copyright (c) 2013 Dave Porter.
 
-Portions of this code are licensed from WikiBooks under the terms of the GNU Free Document License. You may obtain
-a copy of the GNU Free Document License [here](http://en.wikibooks.org/wiki/GNU_Free_Documentation_License).
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License
+[here](http://www.apache.org/licenses/LICENSE-2.0).
 
-The portion of original work not covered by the GNU FDL is released under the terms of the Apache License.  You
-may obtain a copy of the Apache License [here](http://www.apache.org/licenses/LICENSE-2.0). A fuller licensing
-document may be found [here](http://github.com/dcporter/didyoumean.js).
-
-(I'm not a lawyer, I don't know how these two licenses interact, but if they do then the result should be more,
-rather than less, permissive.)
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
