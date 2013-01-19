@@ -5,15 +5,11 @@ didYouMean.js - A simple JavaScript matching engine
 
 [Available on GitHub](https://github.com/dcporter/didyoumean.js).
 
-A super-simple, not-terribly-optimized JS library for matching short, typo-ridden input to a list of
-possibilities. You can use it to suggest a misspelled command-line utility option to a user, or to
-offer links to nearby valid URLs on your 404 page. (The examples below are taken from my personal
-site, [dcporter.net](http://dcporter.net/)), which uses didYouMean.js to suggest correct URLs from
+A super-simple, highly optimized JS library for matching human-quality input to a list of potential
+matches. You can use it to suggest a misspelled command-line utility option to a user, or to offer
+links to nearby valid URLs on your 404 page. (The examples below are taken from my personal site,
+[dcporter.net](http://dcporter.net/)), which uses didYouMean.js to suggest correct URLs from
 misspelled ones, such as [dcporter.net/me/instargm](http://dcporter.net/me/instargm).)
-
-didYouMean.js computes edit distance using a Levenshtein distance algorithm from wikibooks:
-
-http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance#JavaScript
 
 
 didYouMean(str, list, [key])
@@ -104,29 +100,21 @@ console.log(didYouMean(input, list, key));
 ```
 
 
-TODO
-----
-
-This is missing a major optimization. Since we only ever care about edit distances that are smaller than the
-current winner, we can stop searching as soon we exceed that limit for any given possible match.
-
-The optimized method, in C, can be found [here](http://www.lemoda.net/c/edit-distance-with-max/index.html).
-
-
 License
 -------
 
 didYouMean copyright (c) 2013 Dave Porter.
 
-Portions of this code are licensed from WikiBooks under the terms of the GNU Free Document License. You may obtain
-a copy of the GNU Free Document License [here](http://en.wikibooks.org/wiki/GNU_Free_Documentation_License).
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License
+[here](http://www.apache.org/licenses/LICENSE-2.0).
 
-The portion of original work not covered by the GNU FDL is released under the terms of the Apache License.  You
-may obtain a copy of the Apache License [here](http://www.apache.org/licenses/LICENSE-2.0). A fuller licensing
-document may be found [here](http://github.com/dcporter/didyoumean.js).
-
-(I'm not a lawyer, I don't know how these two licenses interact, but if they do then the result should be more,
-rather than less, permissive.)
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 
 */
 (function() {
@@ -155,7 +143,7 @@ rather than less, permissive.)
       // If we're running a case-insensitive search, smallify the candidate.
       if (!arguments.callee.caseSensitive) { candidate = candidate.toLowerCase(); }
       // Get and compare edit distance.
-      val = getEditDistance(str, candidate);
+      val = getEditDistance(str, candidate, winningVal);
       // If this value is smaller than our current winning value, OR if we have no winning val yet (i.e. the
       // threshold option is set to null, meaning the caller wants a match back no matter how bad it is), then
       // this is our new winner.
@@ -187,41 +175,69 @@ rather than less, permissive.)
     window.didYouMean = didYouMean;
   }
 
-  
-  // Algorithm courtesy of http://en.wikibooks.org/wiki/Algorithm_implementation/Strings/Levenshtein_distance#JavaScript
-  // TODO: Optimize this to quit searching after the current winning value is exceeded.
-  function getEditDistance(a, b){
-    if(a.length == 0) return b.length; 
-    if(b.length == 0) return a.length; 
+  var MAX_INT = Math.pow(2,32) - 1; // We could probably go higher than this, but for practical reasons let's not.
+  function getEditDistance(a, b, max) {
+    // Handle null or undefined max.
+    max = max || max === 0 ? max : MAX_INT;
 
-    var matrix = [];
+    var lena = a.length;
+    var lenb = b.length;
 
-    // increment along the first column of each row
-    var i;
-    for(i = 0; i <= b.length; i++){
-      matrix[i] = [i];
-    }
+    // Fast path - no A or B.
+    if (lena === 0) return Math.min(max + 1, lenb);
+    if (lenb === 0) return Math.min(max + 1, lena);
 
-    // increment each column in the first row
-    var j;
-    for(j = 0; j <= a.length; j++){
-      matrix[0][j] = j;
-    }
+    // Fast path - length diff larger than max.
+    if (Math.abs(lena - lenb) > max) return max + 1;
 
-    // Fill in the rest of the matrix
-    for(i = 1; i <= b.length; i++){
-      for(j = 1; j <= a.length; j++){
-        if(b.charAt(i-1) == a.charAt(j-1)){
-          matrix[i][j] = matrix[i-1][j-1];
-        } else {
-          matrix[i][j] = Math.min(matrix[i-1][j-1] + 1, // substitution
-                                  Math.min(matrix[i][j-1] + 1, // insertion
-                                           matrix[i-1][j] + 1)); // deletion
+    // Slow path.
+    var matrix = [],
+        i, j, colMin, minJ, maxJ;
+
+    // Set up the first row ([0, 1, 2, 3, etc]).
+    for (i = 0; i <= lenb; i++) { matrix[i] = [i]; }
+
+    // Set up the first column (same).
+    for (j = 0; j <= lena; j++) { matrix[0][j] = j; }
+
+    // Loop over the rest of the columns.
+    for (i = 1; i <= lenb; i++) {
+      colMin = MAX_INT;
+      minJ = 1;
+      if (i > max) minJ = i - max;
+      maxJ = lenb + 1;
+      if (maxJ > max + i) maxJ = max + i;
+      // Loop over the rest of the rows.
+      for (j = 1; j <= lena; j++) {
+        // If j is out of bounds, just put a large value in the slot.
+        if (j < minJ || j > maxJ) {
+          matrix[i][j] = max + 1
         }
-      }
-    }
 
-    return matrix[b.length][a.length];
+        // Otherwise do the normal Levenshtein thing.
+        else {
+          // If the characters are the same, there's no change in edit distance.
+          if (b.charAt(i - 1) === a.charAt(j - 1)) {
+            matrix[i][j] = matrix[i - 1][j - 1];
+          }
+          // Otherwise, see if we're substituting, inserting or deleting.
+          else {
+            matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, // Substitute
+                                    Math.min(matrix[i][j - 1] + 1, // Insert
+                                    matrix[i - 1][j] + 1)); // Delete
+          }
+        }
+
+        // Either way, update colMin.
+        if (matrix[i][j] < colMin) colMin = matrix[i][j];
+      }
+
+      // If this column's minimum is greater than the allowed maximum, there's no point
+      // in going on with life.
+      if (colMin > max) return max + 1;
+    }
+    // If we made it this far without running into the max, then return the final matrix value.
+    return matrix[lenb][lena];
   };
 
 })();
