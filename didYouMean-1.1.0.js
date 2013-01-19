@@ -8,8 +8,14 @@ didYouMean.js - A simple JavaScript matching engine
 A super-simple, highly optimized JS library for matching human-quality input to a list of potential
 matches. You can use it to suggest a misspelled command-line utility option to a user, or to offer
 links to nearby valid URLs on your 404 page. (The examples below are taken from my personal site,
-[dcporter.net](http://dcporter.net/)), which uses didYouMean.js to suggest correct URLs from
+[dcporter.net](http://dcporter.net/), which uses didYouMean.js to suggest correct URLs from
 misspelled ones, such as [dcporter.net/me/instargm](http://dcporter.net/me/instargm).)
+
+didYouMean.js works in the browser as well as in node.js. To install it for use in node:
+
+```
+npm install didyoumean
+```
 
 
 didYouMean(str, list, [key])
@@ -31,7 +37,7 @@ Options are set on the didYouMean function object. You may change them at any ti
 ### threshold
 
   By default, the method will only return strings whose edit distance is less than 40% (0.4x) of their length.
-  For example, if a ten-letter string is five edits away from its nearest match, the method will return false.
+  For example, if a ten-letter string is five edits away from its nearest match, the method will return null.
 
   You can control this by setting the "threshold" value on the didYouMean function. For example, to set the
   edit distance threshold to 50% of the input string's length:
@@ -41,6 +47,12 @@ Options are set on the didYouMean function object. You may change them at any ti
   ```
 
   To return the nearest match no matter the threshold, set this value to null.
+
+### thresholdAbsolute
+
+  This option behaves the same as threshold, but instead takes an integer number of edit steps. For example,
+  if thresholdAbsolute is set to 20 (the default), then the method will only return strings whose edit distance
+  is less than 20. Both options apply.
 
 ### caseSensitive
 
@@ -66,6 +78,11 @@ Options are set on the didYouMean function object. You may change them at any ti
   
   This option has no effect on lists of strings.
 
+### returnFirstMatch
+  
+  By default, the method will search all values and return the closest match. If you're simply looking for a "good-
+  enough" match, you can set your thresholds appropriately and set returnFirstMatch to true to substantially speed
+  things up.
 
 Examples
 --------
@@ -73,21 +90,21 @@ Examples
 Matching against a list of strings:
 ```
 var input = 'insargrm'
-var list = ['resume', 'twitter', 'instagram', 'linkedin'];
+var list = ['facebook', 'twitter', 'instagram', 'linkedin'];
 console.log(didYouMean(input, list));
 > 'instagram'
 // The method matches 'insargrm' to 'instagram'.
 
 input = 'google plus';
 console.log(didYouMean(input, list));
-> false
+> null
 // The method is unable to match 'google plus' to any of a list of useful social networks.
 ```
 
 Matching against a list of objects:
 ```
 var input = 'insargrm';
-var list = [ { id: 'resume' }, { id: 'twitter' }, { id: 'instagram' }, { id: 'linkedin' } ];
+var list = [ { id: 'facebook' }, { id: 'twitter' }, { id: 'instagram' }, { id: 'linkedin' } ];
 var key = 'id';
 console.log(didYouMean(input, list, key));
 > 'instagram'
@@ -121,17 +138,23 @@ limitations under the License.
 
   // The didYouMean method.
   var didYouMean = function(str, list, key) {
-    if (!str) return false;
+    if (!str) return null;
 
     // If we're running a case-insensitive search, smallify str.
     if (!arguments.callee.caseSensitive) { str = str.toLowerCase(); }
 
+    // Calculate the initial value (the threshold) if present.
+    var thresholdRelative = arguments.callee.threshold === null ? null : arguments.callee.threshold * str.length,
+        thresholdAbsolute = arguments.callee.thresholdAbsolute,
+        winningVal;
+    if (thresholdRelative !== null && thresholdAbsolute !== null) winningVal = Math.min(thresholdRelative, thresholdAbsolute);
+    else if (thresholdRelative !== null) winningVal = thresholdRelative;
+    else if (thresholdAbsolute !== null) winningVal = thresholdAbsolute;
+    else winningVal = null;
+
     // Get the edit distance to each option. If the closest one is less than 40% (by default) of str's length,
     // then return it.
-    var winner,
-        threshold = arguments.callee.threshold,
-        winningVal = threshold === null ? null : threshold * str.length,
-        candidate, val,
+    var winner, candidate, val,
         i, len = list.length;
     for (i = 0; i < len; i++) {
       // Get item.
@@ -152,6 +175,8 @@ limitations under the License.
         // Set the winner to either the value or its object, depending on the returnWinningObject option.
         if (key && arguments.callee.returnWinningObject) winner = list[i];
         else winner = candidate;
+        // If we're returning the first match, return it now.
+        if (arguments.callee.returnFirstMatch) return winner;
       }
     }
 
@@ -161,9 +186,11 @@ limitations under the License.
 
   // Set default options.
   didYouMean.threshold = 0.4;
+  didYouMean.thresholdAbsolute = 20;
   didYouMean.caseSensitive = false;
   didYouMean.nullResultValue = null;
   didYouMean.returnWinningObject = null;
+  didYouMean.returnFirstMatch = false;
 
   // Expose.
   // In node...
