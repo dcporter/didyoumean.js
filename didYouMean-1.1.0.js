@@ -18,6 +18,39 @@ npm install didyoumean
 ```
 
 
+Examples
+--------
+
+Matching against a list of strings:
+```
+var input = 'insargrm'
+var list = ['facebook', 'twitter', 'instagram', 'linkedin'];
+console.log(didYouMean(input, list));
+> 'instagram'
+// The method matches 'insargrm' to 'instagram'.
+
+input = 'google plus';
+console.log(didYouMean(input, list));
+> null
+// The method is unable to match 'google plus' to any of a list of useful social networks.
+```
+
+Matching against a list of objects:
+```
+var input = 'insargrm';
+var list = [ { id: 'facebook' }, { id: 'twitter' }, { id: 'instagram' }, { id: 'linkedin' } ];
+var key = 'id';
+console.log(didYouMean(input, list, key));
+> 'instagram'
+// The method returns the matching value.
+
+didYouMean.returnWinningObject = true;
+console.log(didYouMean(input, list, key));
+> { id: 'instagram' }
+// The method returns the matching object.
+```
+
+
 didYouMean(str, list, [key])
 ----------------------------
 
@@ -83,38 +116,6 @@ Options are set on the didYouMean function object. You may change them at any ti
   By default, the method will search all values and return the closest match. If you're simply looking for a "good-
   enough" match, you can set your thresholds appropriately and set returnFirstMatch to true to substantially speed
   things up.
-
-Examples
---------
-
-Matching against a list of strings:
-```
-var input = 'insargrm'
-var list = ['facebook', 'twitter', 'instagram', 'linkedin'];
-console.log(didYouMean(input, list));
-> 'instagram'
-// The method matches 'insargrm' to 'instagram'.
-
-input = 'google plus';
-console.log(didYouMean(input, list));
-> null
-// The method is unable to match 'google plus' to any of a list of useful social networks.
-```
-
-Matching against a list of objects:
-```
-var input = 'insargrm';
-var list = [ { id: 'facebook' }, { id: 'twitter' }, { id: 'instagram' }, { id: 'linkedin' } ];
-var key = 'id';
-console.log(didYouMean(input, list, key));
-> 'instagram'
-// The method returns the matching value.
-
-didYouMean.returnWinningObject = true;
-console.log(didYouMean(input, list, key));
-> { id: 'instagram' }
-// The method returns the matching object.
-```
 
 
 License
