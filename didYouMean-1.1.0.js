@@ -32,7 +32,7 @@ console.log(didYouMean(input, list));
 input = 'google plus';
 console.log(didYouMean(input, list));
 > null
-// The method is unable to match 'google plus' to any of a list of useful social networks.
+// The method was unable to find 'google plus' in the list of options.
 ```
 
 Matching against a list of objects:
