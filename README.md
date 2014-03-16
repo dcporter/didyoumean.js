@@ -5,9 +5,10 @@ didYouMean.js - A simple JavaScript matching engine
 
 A super-simple, highly optimized JS library for matching human-quality input to a list of potential
 matches. You can use it to suggest a misspelled command-line utility option to a user, or to offer
-links to nearby valid URLs on your 404 page. (The examples below are taken from my personal site,
-[dcporter.net](http://dcporter.net/), which uses didYouMean.js to suggest correct URLs from
-misspelled ones, such as [dcporter.net/me/instargm](http://dcporter.net/me/instargm).)
+links to nearby valid URLs on your 404 page. (The examples below are taken from a personal project,
+my [HTML5 business card](http://dcporter.aws.af.cm/me), which uses didYouMean.js to suggest correct
+URLs from misspelled ones, such as [dcporter.aws.af.cm/me/instagarm](http://dcporter.aws.af.cm/me/instagarm).)
+Uses the [Levenshtein distance algorithm](https://en.wikipedia.org/wiki/Levenshtein_distance).
 
 didYouMean.js works in the browser as well as in node.js. To install it for use in node:
 
@@ -119,7 +120,7 @@ Options are set on the didYouMean function object. You may change them at any ti
 License
 -------
 
-didYouMean copyright (c) 2013 Dave Porter.
+didYouMean copyright (c) 2013-2014 Dave Porter.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

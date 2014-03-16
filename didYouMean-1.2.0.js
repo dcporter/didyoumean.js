@@ -7,9 +7,10 @@ didYouMean.js - A simple JavaScript matching engine
 
 A super-simple, highly optimized JS library for matching human-quality input to a list of potential
 matches. You can use it to suggest a misspelled command-line utility option to a user, or to offer
-links to nearby valid URLs on your 404 page. (The examples below are taken from my personal site,
-[dcporter.net](http://dcporter.net/), which uses didYouMean.js to suggest correct URLs from
-misspelled ones, such as [dcporter.net/me/instargm](http://dcporter.net/me/instargm).)
+links to nearby valid URLs on your 404 page. (The examples below are taken from a personal project,
+my [HTML5 business card](http://dcporter.aws.af.cm/me), which uses didYouMean.js to suggest correct
+URLs from misspelled ones, such as [dcporter.aws.af.cm/me/instagarm](http://dcporter.aws.af.cm/me/instagarm).)
+Uses the [Levenshtein distance algorithm](https://en.wikipedia.org/wiki/Levenshtein_distance).
 
 didYouMean.js works in the browser as well as in node.js. To install it for use in node:
 
@@ -121,7 +122,7 @@ Options are set on the didYouMean function object. You may change them at any ti
 License
 -------
 
-didYouMean copyright (c) 2013 Dave Porter.
+didYouMean copyright (c) 2013-2014 Dave Porter.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -136,17 +137,18 @@ limitations under the License.
 
 */
 (function() {
+  "use strict";
 
   // The didYouMean method.
-  var didYouMean = function(str, list, key) {
+  function didYouMean(str, list, key) {
     if (!str) return null;
 
     // If we're running a case-insensitive search, smallify str.
-    if (!arguments.callee.caseSensitive) { str = str.toLowerCase(); }
+    if (!didYouMean.caseSensitive) { str = str.toLowerCase(); }
 
     // Calculate the initial value (the threshold) if present.
-    var thresholdRelative = arguments.callee.threshold === null ? null : arguments.callee.threshold * str.length,
-        thresholdAbsolute = arguments.callee.thresholdAbsolute,
+    var thresholdRelative = didYouMean.threshold === null ? null : didYouMean.threshold * str.length,
+        thresholdAbsolute = didYouMean.thresholdAbsolute,
         winningVal;
     if (thresholdRelative !== null && thresholdAbsolute !== null) winningVal = Math.min(thresholdRelative, thresholdAbsolute);
     else if (thresholdRelative !== null) winningVal = thresholdRelative;
@@ -165,7 +167,7 @@ limitations under the License.
       // Gatekeep.
       if (!candidate) continue;
       // If we're running a case-insensitive search, smallify the candidate.
-      if (!arguments.callee.caseSensitive) { candidate = candidate.toLowerCase(); }
+      if (!didYouMean.caseSensitive) { candidate = candidate.toLowerCase(); }
       // Get and compare edit distance.
       val = getEditDistance(str, candidate, winningVal);
       // If this value is smaller than our current winning value, OR if we have no winning val yet (i.e. the
@@ -174,15 +176,15 @@ limitations under the License.
       if (winningVal === null || val < winningVal) {
         winningVal = val;
         // Set the winner to either the value or its object, depending on the returnWinningObject option.
-        if (key && arguments.callee.returnWinningObject) winner = list[i];
+        if (key && didYouMean.returnWinningObject) winner = list[i];
         else winner = candidate;
         // If we're returning the first match, return it now.
-        if (arguments.callee.returnFirstMatch) return winner;
+        if (didYouMean.returnFirstMatch) return winner;
       }
     }
 
     // If we have a winner, return it.
-    return winner || arguments.callee.nullResultValue;
+    return winner || didYouMean.nullResultValue;
   };
 
   // Set default options.
