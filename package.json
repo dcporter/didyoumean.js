@@ -1,6 +1,6 @@
 {
   "name": "didyoumean",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Match human-quality input to potential matches by edit distance.",
   "homepage": "https://github.com/dcporter/didyoumean.js",
   "author": {
@@ -15,7 +15,7 @@
     "distance",
     "levenshtein"
   ],
-  "main": "./didYouMean-1.2.0.js",
+  "main": "./didYouMean-1.2.1.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/dcporter/didyoumean.js.git"

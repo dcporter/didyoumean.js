@@ -157,19 +157,20 @@ limitations under the License.
 
     // Get the edit distance to each option. If the closest one is less than 40% (by default) of str's length,
     // then return it.
-    var winner, candidate, val,
+    var winner, candidate, testCandidate, val,
         i, len = list.length;
     for (i = 0; i < len; i++) {
       // Get item.
       candidate = list[i];
       // If there's a key, get the candidate value out of the object.
-      if (key) candidate = candidate[key];
+      if (key) { candidate = candidate[key]; }
       // Gatekeep.
-      if (!candidate) continue;
+      if (!candidate) { continue; }
       // If we're running a case-insensitive search, smallify the candidate.
-      if (!didYouMean.caseSensitive) { candidate = candidate.toLowerCase(); }
+      if (!didYouMean.caseSensitive) { testCandidate = candidate.toLowerCase(); }
+      else { testCandidate = candidate; }
       // Get and compare edit distance.
-      val = getEditDistance(str, candidate, winningVal);
+      val = getEditDistance(str, testCandidate, winningVal);
       // If this value is smaller than our current winning value, OR if we have no winning val yet (i.e. the
       // threshold option is set to null, meaning the caller wants a match back no matter how bad it is), then
       // this is our new winner.
@@ -185,7 +186,7 @@ limitations under the License.
 
     // If we have a winner, return it.
     return winner || didYouMean.nullResultValue;
-  };
+  }
 
   // Set default options.
   didYouMean.threshold = 0.4;
@@ -241,7 +242,7 @@ limitations under the License.
       for (j = 1; j <= lena; j++) {
         // If j is out of bounds, just put a large value in the slot.
         if (j < minJ || j > maxJ) {
-          matrix[i][j] = max + 1
+          matrix[i][j] = max + 1;
         }
 
         // Otherwise do the normal Levenshtein thing.
@@ -268,6 +269,6 @@ limitations under the License.
     }
     // If we made it this far without running into the max, then return the final matrix value.
     return matrix[lenb][lena];
-  };
+  }
 
 })();
